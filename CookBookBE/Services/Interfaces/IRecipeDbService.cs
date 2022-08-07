@@ -4,10 +4,10 @@ namespace CookBookBE.Services.Interfaces
 {
     public interface IRecipeDbService
     {
-        Task<DbRecipe> GetRecipeAsync(Guid id);
         Task<IEnumerable<DbRecipe>> GetRecipesAsync();
-        Task CreateRecipeAsync(DbRecipe recipe);
-        Task UpdateRecipeAsync(DbRecipe recipe);
-        Task DeleteRecipeAsync(Guid id);
+        Task<DbRecipe?> GetRecipeAsync(Guid id);
+        Task<DbRecipe?> CreateRecipeAsync(DbRecipe recipe);
+        Task<DbRecipe?> UpdateRecipeAsync(DbRecipe recipe);
+        Task<DbRecipe?> DeleteRecipeAsync(Guid id);
     }
 }

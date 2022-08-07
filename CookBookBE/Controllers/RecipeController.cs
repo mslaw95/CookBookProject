@@ -41,14 +41,15 @@ namespace CookBookBE.Controllers
                 CreatedDate = DateTimeOffset.UtcNow,
             };
 
-            await recipeDbService.CreateRecipeAsync(dbRecipe);
+            var createdRecipe = await recipeDbService.CreateRecipeAsync(dbRecipe);
 
-            return CreatedAtAction(nameof(GetRecipeAsync), new { id = dbRecipe.Id }, dbRecipe.ToDtoModel());
+            //return CreatedAtAction(nameof(GetRecipeAsync), new { id = dbRecipe.Id }, dbRecipe.ToDtoModel());
+            return createdRecipe is null ? NotFound() : createdRecipe.ToDtoModel();
         }
 
         // Put /recipes/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateRecipeAsync(Guid id, Recipe recipe)
+        public async Task<ActionResult<Recipe>> UpdateRecipeAsync(Guid id, Recipe recipe)
         {
             var existingRecipe = await recipeDbService.GetRecipeAsync(id);
             if (existingRecipe is null)
@@ -56,19 +57,20 @@ namespace CookBookBE.Controllers
                 return NotFound();
             }
 
-            var updatedRecipe = existingRecipe with
+            var recipeUpdate = existingRecipe with
             {
                 Title = recipe.Title,
             };
 
-            await recipeDbService.UpdateRecipeAsync(updatedRecipe);
+            var updatedRecipe = await recipeDbService.UpdateRecipeAsync(recipeUpdate);
 
-            return NoContent();
+            return updatedRecipe is null ? NotFound() : updatedRecipe.ToDtoModel();
+
         }
 
         // Delete /recipes/{id}
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteRecipeAsync(Guid id)
+        public async Task<ActionResult<Recipe>> DeleteRecipeAsync(Guid id)
         {
             var existingRecipe = await recipeDbService.GetRecipeAsync(id);
             if (existingRecipe is null)
@@ -76,9 +78,10 @@ namespace CookBookBE.Controllers
                 return NotFound();
             }
 
-            await recipeDbService.DeleteRecipeAsync(id);
+            var deletedRecipe = await recipeDbService.DeleteRecipeAsync(id);
 
-            return NoContent();
+            //return NoContent();
+            return deletedRecipe is null ? NotFound() : deletedRecipe.ToDtoModel();
         }
     }
 }

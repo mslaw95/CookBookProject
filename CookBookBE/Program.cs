@@ -60,8 +60,11 @@ if (isDevelopment)
         .UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CookBookWebApp v1"))
         .UseHttpsRedirection();
 
-    RecipeContext dbContext = app.Services.GetRequiredService<RecipeContext>();
-    dbContext.Database.Migrate();
+    using var scope = app.Services.CreateScope();
+    {
+        RecipeContext dbContext = scope.ServiceProvider.GetRequiredService<RecipeContext>();
+        dbContext.Database.Migrate();
+    }
 }
 
 app.UseRouting();
