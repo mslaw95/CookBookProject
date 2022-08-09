@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+
+  cookbookbe:
+    container_name: cookbookbe
+    image: ${DOCKER_REGISTRY}cookbookbe
+    build:
+      context: .
+      dockerfile: CookBookBE/Dockerfile
+    depends_on:
+      - sqlserver
+    ports:
+      - 80:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    restart: always
+    ports: 
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "AdminAdm1n"
+      ACCEPT_EULA: "Y"

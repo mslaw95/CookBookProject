@@ -17,7 +17,7 @@ builder.Services
     .AddScoped<IRecipeDbService, RecipeDbService>()
     .AddDbContext<RecipeContext>(options =>
     {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DockerSQLServerConnection"));
     })
     .AddControllers(options =>
     {
@@ -46,6 +46,11 @@ if (isDevelopment)
             });
     });
 }
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80);
+});
 
 /// <summary>
 // Configure App
