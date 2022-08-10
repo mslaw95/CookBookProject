@@ -53,5 +53,46 @@ namespace CookBookBE.Services
 
             return dbRecipe;
         }
+
+        // TMP - untill I write sql script for some random data
+        public async Task PopulateDbWithData()
+        {
+            Random rnd = new ();
+
+            var newTags = new List<Tag>() {
+                new () { Name = "Breakfast" },
+                new () { Name = "Dinner" },
+                new () { Name = "Lunch" },
+                new () { Name = "Supper" },
+                new () { Name = "Easy" },
+                new () { Name = "Hard" },
+            };
+
+            var newIngredients = new List<Ingredient>() {
+                new () { Name = "Egg" },
+                new () { Name = "Tuna" },
+                new () { Name = "Salad" },
+                new () { Name = "Ketchup" },
+                new () { Name = "Tortilla" },
+                new () { Name = "Ham" },
+                new () { Name = "Cheese" },
+            };
+
+            var newRecipes = new List<Recipe>();
+            for (int i = 1; i <= 10; i++)
+            {
+                newRecipes.Add(
+                    new Recipe() {
+                        Title = $"Recipe{i}",
+                        Description = i.ToString(),
+                        Ingredients = newIngredients.OrderBy(i => rnd.Next()).Take(2).ToList(),
+                        Tags = newTags.OrderBy(i => rnd.Next()).Take(2).ToList()
+                    }
+                );
+            }
+
+            recipeContext.AddRange(newRecipes);
+            await recipeContext.SaveChangesAsync();
+        }
     }
 }

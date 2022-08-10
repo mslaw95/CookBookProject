@@ -9,5 +9,8 @@ namespace CookBookBE.Services.Interfaces
         Task<DbRecipe?> CreateRecipeAsync(DbRecipe recipe);
         Task<DbRecipe?> UpdateRecipeAsync(DbRecipe recipe);
         Task<DbRecipe?> DeleteRecipeAsync(Guid id);
+
+        // TMP - Untill sql script
+        Task PopulateDbWithData();
     }
 }

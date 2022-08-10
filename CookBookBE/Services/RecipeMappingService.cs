@@ -2,6 +2,7 @@
 
 namespace CookBookBE.Services
 {
+    // TODO - consider what to do with this
     public class RecipeMappingService
     {
         public Recipe ToDtoModel(DbRecipe dbRecipe)
@@ -10,7 +11,6 @@ namespace CookBookBE.Services
             {
                 Id = dbRecipe.Id,
                 Title = dbRecipe.Title,
-                CreatedDate = dbRecipe.CreatedDate,
             };
         }
 
@@ -20,7 +20,6 @@ namespace CookBookBE.Services
             {
                 Id = recipe.Id,
                 Title = recipe.Title,
-                CreatedDate = recipe.CreatedDate,
             };
         }
     }

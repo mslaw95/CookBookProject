@@ -83,5 +83,13 @@ namespace CookBookBE.Controllers
             //return NoContent();
             return deletedRecipe is null ? NotFound() : deletedRecipe.ToDtoModel();
         }
+
+        // Post /recipes/populate
+        [HttpPost("populate")]
+        public async Task<ActionResult> PopulateDbWithData()
+        {
+            await PopulateDbWithData();
+            return Ok();
+        }
     }
 }
