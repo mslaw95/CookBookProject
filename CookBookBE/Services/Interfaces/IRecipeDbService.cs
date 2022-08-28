@@ -6,8 +6,8 @@ namespace CookBookBE.Services.Interfaces
     {
         Task<IEnumerable<DbRecipe>> GetRecipesAsync();
         Task<DbRecipe?> GetRecipeAsync(Guid id);
-        Task<DbRecipe?> CreateRecipeAsync(DbRecipe recipe);
-        Task<DbRecipe?> UpdateRecipeAsync(DbRecipe recipe);
+        Task<DbRecipe?> CreateRecipeAsync(Recipe newRecipe);
+        Task<DbRecipe?> UpdateRecipeAsync(DbRecipe existingRecipe, Recipe updateRecipe);
         Task<DbRecipe?> DeleteRecipeAsync(Guid id);
 
         // TMP - Untill sql script

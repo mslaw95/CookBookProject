@@ -32,40 +32,36 @@ namespace CookBookBE.Controllers
 
         // Post /recipes
         [HttpPost]
-        public async Task<ActionResult<Recipe>> CreateRecipeAsync(Recipe recipe)
+        public async Task<ActionResult<Recipe>> CreateRecipeAsync(Recipe newRecipe)
         {
-            DbRecipe dbRecipe = new()
+            if (newRecipe is null)
             {
-                Id = Guid.NewGuid(),
-                Title = recipe.Title,
-                CreatedDate = DateTimeOffset.UtcNow,
-            };
+                return BadRequest(newRecipe);
+            }
+            
+            var createdRecipe = await recipeDbService.CreateRecipeAsync(newRecipe);
 
-            var createdRecipe = await recipeDbService.CreateRecipeAsync(dbRecipe);
-
-            //return CreatedAtAction(nameof(GetRecipeAsync), new { id = dbRecipe.Id }, dbRecipe.ToDtoModel());
             return createdRecipe is null ? NotFound() : createdRecipe.ToDtoModel();
         }
 
         // Put /recipes/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<Recipe>> UpdateRecipeAsync(Guid id, Recipe recipe)
+        public async Task<ActionResult<Recipe>> UpdateRecipeAsync(Guid id, Recipe recipeUpdate)
         {
+            if (recipeUpdate is null)
+            {
+                return BadRequest(recipeUpdate);
+            }
+
             var existingRecipe = await recipeDbService.GetRecipeAsync(id);
             if (existingRecipe is null)
             {
                 return NotFound();
             }
 
-            var recipeUpdate = existingRecipe with
-            {
-                Title = recipe.Title,
-            };
-
-            var updatedRecipe = await recipeDbService.UpdateRecipeAsync(recipeUpdate);
+            var updatedRecipe = await recipeDbService.UpdateRecipeAsync(existingRecipe, recipeUpdate);
 
             return updatedRecipe is null ? NotFound() : updatedRecipe.ToDtoModel();
-
         }
 
         // Delete /recipes/{id}

@@ -23,16 +23,31 @@ namespace CookBookBE.Services
             return await recipeContext.Recipes.FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<DbRecipe?> CreateRecipeAsync(DbRecipe recipe)
+        public async Task<DbRecipe?> CreateRecipeAsync(Recipe recipe)
         {
-            recipeContext.Add(recipe);
+            var dbRecipe = new DbRecipe()
+            {
+                Id = Guid.NewGuid(),
+                Title = recipe.Title,
+                Description = recipe.Description,
+                Ingredients = recipe.Ingredients?.Select(i => i.ToDbModel()).ToList(),
+                Tags = recipe.Tags?.Select(t => t.ToDbModel()).ToList(),
+                CreatedDate = DateTime.Now,
+            };
+
+            recipeContext.Add(dbRecipe);
             await recipeContext.SaveChangesAsync();
 
-            return recipe;
+            return dbRecipe;
         }
 
-        public async Task<DbRecipe?> UpdateRecipeAsync(DbRecipe recipe)
+        public async Task<DbRecipe?> UpdateRecipeAsync(DbRecipe existingRecipe, Recipe recipeUpdate)
         {
+            var recipe = existingRecipe with
+            {
+                Title = recipeUpdate.Title,
+            };
+            
             recipeContext.ChangeTracker.Clear();
 
             recipeContext.Update(recipe);

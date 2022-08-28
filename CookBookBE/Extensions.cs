@@ -8,7 +8,6 @@ namespace CookBookBE
         public static Recipe ToDtoModel(this DbRecipe dbRecipe) =>
             new ()
             {
-                Id = dbRecipe.Id,
                 Title = dbRecipe.Title,
                 Description = dbRecipe.Description,
                 Ingredients = dbRecipe.Ingredients?.Select(i => i.ToDtoModel()).ToList(),
@@ -18,7 +17,6 @@ namespace CookBookBE
         public static DbRecipe ToDbModel(this Recipe recipe) =>
             new ()
             {
-                Id = recipe.Id,
                 Title = recipe.Title,
                 Description = recipe.Description,
                 Ingredients = recipe.Ingredients?.Select(i => i.ToDbModel()).ToList(),
