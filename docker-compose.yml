@@ -2,25 +2,40 @@ version: '3.4'
 
 services:
 
-  cookbookbe:
-    container_name: cookbookbe
-    image: ${DOCKER_REGISTRY}cookbookbe
+  cookbookbe.api:
+    image: ${DOCKER_REGISTRY-}cookbookbe-api
     build:
       context: .
-      dockerfile: CookBookBE/Dockerfile
+      dockerfile: CookBookBE.Api/Dockerfile
     depends_on:
       - sqlserver
     ports:
-      - 80:80
+      - "5443:80"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+
+  cookbookbe.migrator:
+    image: ${DOCKER_REGISTRY-}cookbookbe-dbmigrator
+    build:
+      context: .
+      dockerfile: CookBookBE.DbMigrator/Dockerfile
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development 
 
   sqlserver:
     container_name: sqlserver
     image: mcr.microsoft.com/mssql/server:2022-latest
     restart: always
     ports: 
-      - "1433:1433"
+      - "3209:1433"
     environment:
       SA_PASSWORD: "AdminAdm1n"
       ACCEPT_EULA: "Y"
+    volumes:
+      - sqlserver:/var/lib/sqlserver
+
+volumes:
+  sqlserver:
+    driver: local

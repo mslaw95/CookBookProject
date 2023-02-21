@@ -1,19 +1,21 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import RecipeList from './pages/RecipeList';
-import NewRecipeForm from './pages/NewRecipeForm';
+import Pages from './pages/Pages';
 
-class App extends React.Component {
-  render() {
+function App() {
     return (
-        <Router>
+        <div className="App">
+          <h1> Hello </h1>
+          <Pages />
+        </div>
+    )
+}
+        /*<Router>
             <Routes>
                 <Route path="/recipelist" element={<RecipeList/>}/>
                 <Route path="/newrecipeform" element={<NewRecipeForm/>}/>
             </Routes>
         </Router>
-    );
-  }
-}
+    );*/
 
 export default App;

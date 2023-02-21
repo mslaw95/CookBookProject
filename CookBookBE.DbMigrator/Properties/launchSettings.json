@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CookBookBE.DbMigrator": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
