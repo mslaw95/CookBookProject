@@ -6,24 +6,17 @@ using CookBookBE.Data.DbModels;
 
 namespace CookBookBE.Api.Services
 {
-    public class RecipeDbService : IRecipeDbService
+    public class RecipeService : IRecipeService
     {
         private readonly RecipeContext recipeContext;
 
-        public RecipeDbService(RecipeContext recipeContext)
+        public RecipeService(RecipeContext recipeContext)
         {
             this.recipeContext = recipeContext;
         }
                 
         public async Task<IEnumerable<DbRecipe>> GetRecipesAsync()
         {
-            var recipes = await recipeContext.Recipes.ToListAsync();
-            if (recipes.Any())
-            {
-                return recipes;
-            }
-
-            await PopulateDbWithData();
             return await recipeContext.Recipes.ToListAsync();
         }
 
@@ -36,12 +29,12 @@ namespace CookBookBE.Api.Services
         {
             var dbRecipe = new DbRecipe()
             {
-                Id = Guid.NewGuid(),
                 Title = recipe.Title,
-                Description = recipe.Description,
-                Ingredients = recipe.Ingredients?.Select(i => i.ToDbModel()).ToList(),
-                Tags = recipe.Tags?.Select(t => t.ToDbModel()).ToList(),
-                CreatedDate = DateTime.Now,
+                Description = recipe.Description ?? "",
+                Ingredients = recipe.Ingredients.Select(i => i?.ToDbModel()).ToList(),
+                Tags = recipe.Tags.Select(t => t?.ToDbModel()).ToList(),
+                DateCreated = DateTime.Now,
+                DateUpdated = DateTime.Now,
             };
 
             recipeContext.Add(dbRecipe);
@@ -50,29 +43,34 @@ namespace CookBookBE.Api.Services
             return dbRecipe;
         }
 
-        public async Task<DbRecipe?> UpdateRecipeAsync(DbRecipe existingRecipe, Recipe recipeUpdate)
+        public async Task<DbRecipe?> UpdateRecipeByIdAsync(Guid id, Recipe recipeUpdate)
         {
-            var recipe = existingRecipe with
+            var dbRecipe = await GetRecipeAsync(id);
+            var updatedRecipe = dbRecipe with
             {
                 Title = recipeUpdate.Title,
+                Description = recipeUpdate.Description,
+                Ingredients = recipeUpdate.Ingredients.Select(i => i?.ToDbModel()).ToList(),
+                Tags = recipeUpdate.Tags.Select(t => t?.ToDbModel()).ToList(),
+                DateUpdated = DateTime.Now,
             };
             
             recipeContext.ChangeTracker.Clear();
-
-            recipeContext.Update(recipe);
+            recipeContext.Update(updatedRecipe);
             await recipeContext.SaveChangesAsync();
 
-            return recipe;
+            return updatedRecipe;
         }
 
         public async Task<DbRecipe?> DeleteRecipeAsync(Guid id)
         {
-            var dbRecipe = await recipeContext.Recipes.FirstOrDefaultAsync(r => r.Id == id);
-            if (dbRecipe != null)
+            var dbRecipe = await GetRecipeAsync(id);
+            if (dbRecipe is null)
             {
-                recipeContext.Remove(dbRecipe);
+                return null;
             }
 
+            recipeContext.Remove(dbRecipe);
             await recipeContext.SaveChangesAsync();
 
             return dbRecipe;
@@ -93,13 +91,13 @@ namespace CookBookBE.Api.Services
             };
 
             var newIngredients = new List<DbIngredient>() {
-                new () { Name = "Egg" },
-                new () { Name = "Tuna" },
-                new () { Name = "Salad" },
-                new () { Name = "Ketchup" },
-                new () { Name = "Tortilla" },
-                new () { Name = "Ham" },
-                new () { Name = "Cheese" },
+                new () { Name = "Egg", Amount = 2, Unit="" },
+                new () { Name = "Tuna", Amount = 1, Unit="can" },
+                new () { Name = "Salad", Amount = 1, Unit="" },
+                new () { Name = "Ketchup", Amount = 3, Unit="TbSp" },
+                new () { Name = "Tortilla", Amount = 2, Unit="" },
+                new () { Name = "Ham", Amount = 400, Unit="g" },
+                new () { Name = "Cheese", Amount = 250, Unit="g" },
             };
 
             var newRecipes = new List<DbRecipe>();
@@ -107,6 +105,7 @@ namespace CookBookBE.Api.Services
             {
                 newRecipes.Add(
                     new DbRecipe() {
+                        Id = Guid.NewGuid(),
                         Title = $"Recipe{i}",
                         Description = i.ToString(),
                         Ingredients = newIngredients.OrderBy(i => rnd.Next()).Take(2).ToList(),

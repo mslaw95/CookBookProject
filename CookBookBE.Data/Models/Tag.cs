@@ -2,6 +2,6 @@
 {
     public record Tag
     {
-        public string Name { get; set; } = "";
+        public string Name { get; set; }
     }
 }

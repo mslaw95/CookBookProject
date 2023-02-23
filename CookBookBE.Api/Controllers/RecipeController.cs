@@ -8,9 +8,9 @@ namespace CookBookBE.Api.Controllers
     [Route("recipes")]
     public class RecipeController: ControllerBase
     {
-        private readonly IRecipeDbService recipeDbService;
+        private readonly IRecipeService recipeDbService;
 
-        public RecipeController(IRecipeDbService recipeDbService)
+        public RecipeController(IRecipeService recipeDbService)
         {
             this.recipeDbService = recipeDbService;
         }
@@ -59,7 +59,7 @@ namespace CookBookBE.Api.Controllers
                 return NotFound();
             }
 
-            var updatedRecipe = await recipeDbService.UpdateRecipeAsync(existingRecipe, recipeUpdate);
+            var updatedRecipe = await recipeDbService.UpdateRecipeByIdAsync(id, recipeUpdate);
 
             return updatedRecipe is null ? NotFound() : updatedRecipe.ToDtoModel();
         }
@@ -84,7 +84,7 @@ namespace CookBookBE.Api.Controllers
         [HttpPost("populate")]
         public async Task<ActionResult> PopulateDbWithData()
         {
-            await PopulateDbWithData();
+            await recipeDbService.PopulateDbWithData();
             return Ok();
         }
     }

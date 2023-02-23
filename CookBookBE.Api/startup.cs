@@ -28,7 +28,7 @@ public class Startup
             o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
         });
 
-        services.AddScoped<IRecipeDbService, RecipeDbService>();
+        services.AddScoped<IRecipeService, RecipeService>();
 
 
         services.AddEndpointsApiExplorer();

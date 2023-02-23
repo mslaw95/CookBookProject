@@ -12,7 +12,7 @@ namespace CookBookBE.Tests
     public class RecipeDbServiceTests
     {
         private const string ConnectionString = "Server=localhost\\sqlexpress;Database=recipedb;Trusted_Connection=True";
-        private readonly RecipeDbService sut;
+        private readonly RecipeService sut;
         private readonly RecipeContext context;
 
         public RecipeDbServiceTests()
@@ -23,7 +23,7 @@ namespace CookBookBE.Tests
             context = new RecipeContext(optionsBuilder.Options);
             context.Database.Migrate();
 
-            sut = new RecipeDbService(context);
+            sut = new RecipeService(context);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace CookBookBE.Tests
             var recipes = CreateManyRecipes(context);
             var recipe = recipes.First();
             var recipeUpdate = BuildSingleRecipe();
-            await sut.UpdateRecipeAsync(recipe, recipeUpdate);
+            await sut.UpdateRecipeByIdAsync(recipe.Id, recipeUpdate);
 
             recipe.Should().BeEquivalentTo(recipeUpdate);
         }
