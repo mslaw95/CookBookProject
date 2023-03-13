@@ -12,7 +12,7 @@ namespace CookBookBE.Data.DbModels
         public string Title { get; init; }
         public string Description { get; init; }
         public ICollection<DbIngredient> Ingredients { get; init; }
-        public ICollection<DbTag> Tags { get; init; }
+        public ICollection<DbTag>? Tags { get; init; }
 
         [JsonIgnore]
         public DateTimeOffset DateCreated { get; init; }

@@ -14,6 +14,7 @@ namespace CookBookBE.Api.Services
             _recipeRepository = recipeRepository;
         }
                 
+        // TODO Include all entities / maybe separate method
         public async Task<IEnumerable<DbRecipe>> GetRecipesAsync()
         {
             return await _recipeRepository.GetAllAsync();
@@ -29,9 +30,9 @@ namespace CookBookBE.Api.Services
             var dbRecipe = new DbRecipe()
             {
                 Title = recipe.Title,
-                Description = recipe.Description ?? "",
-                Ingredients = recipe.Ingredients.Select(i => i?.ToDbModel()).ToList(),
-                Tags = recipe.Tags.Select(t => t?.ToDbModel()).ToList(),
+                Description = recipe.Description ?? String.Empty,
+                Ingredients = recipe.Ingredients.Select(i => i.ToDbModel()).ToList(),
+                Tags = recipe.Tags?.Where(i => i != null).Select(t => t.ToDbModel()).ToList(),
                 DateCreated = DateTime.Now,
                 DateUpdated = DateTime.Now,
             };
@@ -44,12 +45,18 @@ namespace CookBookBE.Api.Services
         public async Task<DbRecipe?> UpdateRecipeByIdAsync(Guid id, Recipe recipeUpdate)
         {
             var dbRecipe = await GetRecipeAsync(id);
+            if (dbRecipe is null)
+            {
+                // TODO Shot some error here
+                return null;
+            }
+
             var updatedRecipe = dbRecipe with
             {
                 Title = recipeUpdate.Title,
-                Description = recipeUpdate.Description,
-                Ingredients = recipeUpdate.Ingredients.Select(i => i?.ToDbModel()).ToList(),
-                Tags = recipeUpdate.Tags.Select(t => t?.ToDbModel()).ToList(),
+                Description = recipeUpdate.Description ?? string.Empty,
+                Ingredients = recipeUpdate.Ingredients.Where(i => i != null).Select(i => i.ToDbModel()).ToList(),
+                Tags = recipeUpdate.Tags?.Where(i => i != null).Select(t => t.ToDbModel()).ToList(),
                 DateUpdated = DateTime.Now,
             };
 

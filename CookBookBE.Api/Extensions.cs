@@ -9,8 +9,8 @@ namespace CookBookBE
             new ()
             {
                 Title = dbRecipe.Title,
-                Description = dbRecipe.Description,
-                Ingredients = dbRecipe.Ingredients?.Select(i => i.ToDtoModel()).ToList(),
+                Description = dbRecipe.Description ?? string.Empty,
+                Ingredients = dbRecipe.Ingredients.Select(i => i.ToDtoModel()).ToList(),
                 Tags = dbRecipe.Tags?.Select(t => t.ToDtoModel()).ToList(),
             };
 
@@ -18,8 +18,8 @@ namespace CookBookBE
             new ()
             {
                 Title = recipe.Title,
-                Description = recipe.Description,
-                Ingredients = recipe.Ingredients?.Select(i => i.ToDbModel()).ToList(),
+                Description = recipe.Description ?? string.Empty,
+                Ingredients = recipe.Ingredients.Select(i => i.ToDbModel()).ToList(),
                 Tags = recipe.Tags?.Select(t => t.ToDbModel()).ToList(),
             };
 
@@ -27,12 +27,16 @@ namespace CookBookBE
             new ()
             {
                 Name = dbIngredient.Name,
+                Amount = dbIngredient.Amount,
+                Unit = dbIngredient.Unit,
             };
 
         public static DbIngredient ToDbModel(this Ingredient ingredient) =>
             new ()
             {
                 Name = ingredient.Name,
+                Amount = ingredient.Amount,
+                Unit = ingredient.Unit,
             };
 
         public static Tag ToDtoModel(this DbTag dbTag) =>
