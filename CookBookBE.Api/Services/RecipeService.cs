@@ -1,28 +1,27 @@
 ﻿using CookBookBE.Data.Models;
 using CookBookBE.Api.Services.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using CookBookBE.Data;
 using CookBookBE.Data.DbModels;
+using CookBookBE.Data.Repositories.Interfaces;
 
 namespace CookBookBE.Api.Services
 {
     public class RecipeService : IRecipeService
     {
-        private readonly RecipeContext recipeContext;
+        private readonly IRecipeRepository _recipeRepository;
 
-        public RecipeService(RecipeContext recipeContext)
+        public RecipeService(IRecipeRepository recipeRepository)
         {
-            this.recipeContext = recipeContext;
+            _recipeRepository = recipeRepository;
         }
                 
         public async Task<IEnumerable<DbRecipe>> GetRecipesAsync()
         {
-            return await recipeContext.Recipes.ToListAsync();
+            return await _recipeRepository.GetAllAsync();
         }
 
         public async Task<DbRecipe?> GetRecipeAsync(Guid id)
         {
-            return await recipeContext.Recipes.FirstOrDefaultAsync(r => r.Id == id);
+            return await _recipeRepository.GetByIdAsync(id);
         }
 
         public async Task<DbRecipe?> CreateRecipeAsync(Recipe recipe)
@@ -37,8 +36,7 @@ namespace CookBookBE.Api.Services
                 DateUpdated = DateTime.Now,
             };
 
-            recipeContext.Add(dbRecipe);
-            await recipeContext.SaveChangesAsync();
+            await _recipeRepository.AddAsync(dbRecipe);
 
             return dbRecipe;
         }
@@ -54,10 +52,8 @@ namespace CookBookBE.Api.Services
                 Tags = recipeUpdate.Tags.Select(t => t?.ToDbModel()).ToList(),
                 DateUpdated = DateTime.Now,
             };
-            
-            recipeContext.ChangeTracker.Clear();
-            recipeContext.Update(updatedRecipe);
-            await recipeContext.SaveChangesAsync();
+
+            await _recipeRepository.UpdateAsync(dbRecipe);
 
             return updatedRecipe;
         }
@@ -70,52 +66,15 @@ namespace CookBookBE.Api.Services
                 return null;
             }
 
-            recipeContext.Remove(dbRecipe);
-            await recipeContext.SaveChangesAsync();
+            await _recipeRepository.DeleteAsync(dbRecipe);
 
             return dbRecipe;
         }
 
-        // TMP - untill I write sql script for some random data
+        // TMP - Until sql script prepared
         public async Task PopulateDbWithData()
         {
-            Random rnd = new ();
-
-            var newTags = new List<DbTag>() {
-                new () { Name = "Breakfast" },
-                new () { Name = "Dinner" },
-                new () { Name = "Lunch" },
-                new () { Name = "Supper" },
-                new () { Name = "Easy" },
-                new () { Name = "Hard" },
-            };
-
-            var newIngredients = new List<DbIngredient>() {
-                new () { Name = "Egg", Amount = 2, Unit="" },
-                new () { Name = "Tuna", Amount = 1, Unit="can" },
-                new () { Name = "Salad", Amount = 1, Unit="" },
-                new () { Name = "Ketchup", Amount = 3, Unit="TbSp" },
-                new () { Name = "Tortilla", Amount = 2, Unit="" },
-                new () { Name = "Ham", Amount = 400, Unit="g" },
-                new () { Name = "Cheese", Amount = 250, Unit="g" },
-            };
-
-            var newRecipes = new List<DbRecipe>();
-            for (int i = 1; i <= 10; i++)
-            {
-                newRecipes.Add(
-                    new DbRecipe() {
-                        Id = Guid.NewGuid(),
-                        Title = $"Recipe{i}",
-                        Description = i.ToString(),
-                        Ingredients = newIngredients.OrderBy(i => rnd.Next()).Take(2).ToList(),
-                        Tags = newTags.OrderBy(i => rnd.Next()).Take(2).ToList()
-                    }
-                );
-            }
-
-            await recipeContext.AddRangeAsync(newRecipes);
-            await recipeContext.SaveChangesAsync();
+            await _recipeRepository.PopulateDbWithData();
         }
     }
 }
