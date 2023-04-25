@@ -3,6 +3,8 @@ using CookBookBE.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using CookBookBE.Data;
+using CookBookBE.Data.Repositories.Interfaces;
+using CookBookBE.Data.Repositories;
 
 namespace CookBookBE.Api;
 
@@ -17,7 +19,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<RecipeContext>(o =>
+        services.AddDbContextFactory<RecipeContext>(o =>
         {
             o.UseSqlServer(Configuration.GetConnectionString("DockerSQLServerConnection"));
         });
@@ -29,7 +31,7 @@ public class Startup
         });
 
         services.AddScoped<IRecipeService, RecipeService>();
-
+        services.AddSingleton<IRecipeRepository, RecipeRepository>();
 
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
