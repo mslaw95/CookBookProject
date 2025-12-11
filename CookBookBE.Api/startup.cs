@@ -1,7 +1,6 @@
 ﻿using CookBookBE.Api.Services.Interfaces;
 using CookBookBE.Api.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using CookBookBE.Data;
 using CookBookBE.Data.Repositories.Interfaces;
 using CookBookBE.Data.Repositories;
@@ -31,6 +30,7 @@ public class Startup
         });
 
         services.AddScoped<IRecipeService, RecipeService>();
+        services.AddScoped<IStorageService, StorageService>();
         services.AddSingleton<IRecipeRepository, RecipeRepository>();
 
         services.AddEndpointsApiExplorer();

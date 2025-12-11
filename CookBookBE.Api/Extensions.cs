@@ -10,7 +10,7 @@ namespace CookBookBE
             {
                 Title = dbRecipe.Title,
                 Description = dbRecipe.Description ?? string.Empty,
-                Ingredients = dbRecipe.Ingredients.Select(i => i.ToDtoModel()).ToList(),
+                Ingredients = dbRecipe.Ingredients?.Select(i => i.ToDtoModel()).ToList(),
                 Tags = dbRecipe.Tags?.Select(t => t.ToDtoModel()).ToList(),
             };
 

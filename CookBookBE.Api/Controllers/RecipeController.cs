@@ -9,10 +9,12 @@ namespace CookBookBE.Api.Controllers
     public class RecipeController: ControllerBase
     {
         private readonly IRecipeService recipeDbService;
+        private readonly IStorageService storageService;
 
-        public RecipeController(IRecipeService recipeDbService)
+        public RecipeController(IRecipeService recipeDbService, IStorageService storageService)
         {
             this.recipeDbService = recipeDbService;
+            this.storageService = storageService;
         }
 
         // Get /recipes
@@ -85,6 +87,14 @@ namespace CookBookBE.Api.Controllers
         public async Task<ActionResult> PopulateDbWithData()
         {
             await recipeDbService.PopulateDbWithData();
+            return Ok();
+        }
+
+        // Post /recipes/{id}/files
+        [HttpPost("{id}/files")]
+        public async Task<ActionResult> AddFileToRecipeAsync(Guid id, string filePath)
+        {
+            await storageService.AddFileToRecipeAsync(id, filePath);
             return Ok();
         }
     }
